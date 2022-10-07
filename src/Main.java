@@ -6,12 +6,12 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scan = new Scanner(System.in);
-        File file = new File("basket.txt");
+        File file = new File("basket.bin");
 
         Basket basket = null;
         try {
-            basket = Basket.loadFromTxtFile(file);
-        } catch (IOException e) {
+            basket = Basket.loadFromBinFile(file);
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -42,8 +42,8 @@ public class Main {
                     basket.addToCart(productNumber, productCount);
 
                     try {
-                        basket.saveTxt(file);
-                    } catch (IOException e) {
+                        basket.saveBin(file);
+                    } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                     break;

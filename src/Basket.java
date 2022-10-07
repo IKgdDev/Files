@@ -1,11 +1,12 @@
 import java.io.*;
 import java.util.Scanner;
 
-public class Basket {
+public class Basket implements Serializable {
     private String[] prodName;
     private int[] prices;
     private int[] prodAmount;
 
+    private static final long serialVersionUID = 1L;
 
     public Basket(String[] productName, int[] price) {
         this.prodName = productName;
@@ -32,7 +33,7 @@ public class Basket {
         System.out.println("Итого " + sumProducts + " руб");
     }
 
-    public void saveTxt(File textFile) throws IOException {
+    public void saveTxt(File textFile) throws Exception {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFile));) {
             StringBuilder s = new StringBuilder();
 
@@ -57,7 +58,7 @@ public class Basket {
         }
     }
 
-    static Basket loadFromTxtFile(File textFile) throws IOException {
+    static Basket loadFromTxtFile(File textFile) throws Exception {
         if (textFile.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(textFile));) {
 
@@ -93,5 +94,28 @@ public class Basket {
 
     public int[] getPrices() {
         return prices;
+    }
+
+    public void saveBin(File file) throws Exception {
+        try (FileOutputStream fos = new FileOutputStream(file);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(this);
+        }
+    }
+
+    public static Basket loadFromBinFile(File file) throws Exception {
+        if (file.exists()) {
+            Basket basket = null;
+            try (FileInputStream fis = new FileInputStream(file);
+                 ObjectInputStream ois = new ObjectInputStream(fis)) {
+                basket = (Basket) ois.readObject();
+            }
+            return basket;
+        } else {
+            String[] products = {"Хлеб", "Сырок", "Шоколадка"};
+            int[] prices = {40, 60, 100};
+            Basket basket = new Basket(products, prices);
+            return basket;
+        }
     }
 }
