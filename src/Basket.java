@@ -32,7 +32,7 @@ public class Basket {
         System.out.println("Итого " + sumProducts + " руб");
     }
 
-    public void saveTxt(File textFile) throws IOException {
+    public void saveTxt(File textFile) throws Exception {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFile));) {
             StringBuilder s = new StringBuilder();
 
@@ -57,7 +57,7 @@ public class Basket {
         }
     }
 
-    static Basket loadFromTxtFile(File textFile) throws IOException {
+    static Basket loadFromTxtFile(File textFile) throws Exception {
         if (textFile.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(textFile));) {
 

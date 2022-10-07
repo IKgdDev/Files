@@ -11,7 +11,7 @@ public class Main {
         Basket basket = null;
         try {
             basket = Basket.loadFromTxtFile(file);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -43,7 +43,7 @@ public class Main {
 
                     try {
                         basket.saveTxt(file);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                     break;
