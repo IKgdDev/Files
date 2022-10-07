@@ -1,45 +1,57 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
 
-        String[] products = {"Хлеб", "Сырок", "Шоколадка"};
-        int[] prices = {40, 60, 100};
-        int[] prodNum = new int[products.length];
-        int sumProducts = 0;
+        Scanner scan = new Scanner(System.in);
+        File file = new File("basket.txt");
+
+        Basket basket = null;
+        try {
+            basket = Basket.loadFromTxtFile(file);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
         System.out.println("Список возможных товаров для покупки:");
-        for (int i = 0; i < products.length; i++) {
-            System.out.println((i+1) + ". " + products[i] + " " + prices[i] + " руб/шт");
+        for (int i = 0; i < basket.getProdName().length; i++) {
+            System.out.println((i + 1) + ". " + basket.getProdName()[i] + " " + basket.getPrices()[i] + " руб/шт");
         }
 
         while (true) {
+            System.out.println("Введите пункт меню или 'end' для выхода:");
+            System.out.println("1. Заполнить корзину");
+            System.out.println("2. Показать корзину");
 
-            System.out.println("Выберите товар и количество или введите `end`");
             String input = scan.nextLine();
 
             if ("end".equals(input)) {
                 break;
             }
 
-            String[] inputArr = input.split(" ");
-            int productNumber = Integer.parseInt(inputArr[0]) - 1;
-            int productCount = Integer.parseInt(inputArr[1]);
+            switch (Integer.parseInt(input)) {
+                case 1:
+                    System.out.println("Введите номер товара и количество");
+                    input = scan.nextLine();
+                    String[] inputArr = input.split(" ");
+                    int productNumber = Integer.parseInt(inputArr[0]) - 1;
+                    int productCount = Integer.parseInt(inputArr[1]);
 
-            prodNum[productNumber] += productCount;
-        }
+                    basket.addToCart(productNumber, productCount);
 
-        System.out.println("Ваша корзина:");
+                    try {
+                        basket.saveTxt(file);
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
 
-        for (int i = 0; i < products.length; i++) {
-            if (prodNum[i] != 0) {
-                System.out.println(products[i] + " " + prodNum[i] + " шт " + prices[i] + " руб/шт "
-                        + (prodNum[i] * prices[i]) + " руб в сумме");
-                sumProducts += prodNum[i] * prices[i];
+                case 2:
+                    basket.printCart();
+                    break;
             }
         }
-        System.out.println("Итого " + sumProducts + " руб");
-
     }
 }
