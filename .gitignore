@@ -3,3 +3,6 @@
 out/
 basket.txt
 basket.bin
+target/
+*.csv
+*.json

@@ -6,12 +6,15 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scan = new Scanner(System.in);
-        File file = new File("basket.txt");
+        File fileCsv = new File("log.csv");
+        File fileJson = new File("basket.json");
+
+        ClientLog clientLog = new ClientLog();
 
         Basket basket = null;
         try {
-            basket = Basket.loadFromTxtFile(file);
-        } catch (Exception e) {
+            basket = Basket.loadFromJsonFile(fileJson);
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
@@ -28,6 +31,11 @@ public class Main {
             String input = scan.nextLine();
 
             if ("end".equals(input)) {
+                try {
+                    clientLog.exportAsCSV(fileCsv);
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             }
 
@@ -36,14 +44,15 @@ public class Main {
                     System.out.println("Введите номер товара и количество");
                     input = scan.nextLine();
                     String[] inputArr = input.split(" ");
-                    int productNumber = Integer.parseInt(inputArr[0]) - 1;
+                    int productNumber = Integer.parseInt(inputArr[0]);
                     int productCount = Integer.parseInt(inputArr[1]);
 
-                    basket.addToCart(productNumber, productCount);
+                    basket.addToCart(productNumber - 1, productCount);
+                    clientLog.log(productNumber, productCount);
 
                     try {
-                        basket.saveTxt(file);
-                    } catch (Exception e) {
+                        basket.saveJson(fileJson);
+                    } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
                     break;
