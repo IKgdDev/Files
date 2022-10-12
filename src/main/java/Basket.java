@@ -31,7 +31,11 @@ public class Basket {
                 sumProducts += prodAmount[i] * prices[i];
             }
         }
-        System.out.println("Итого " + sumProducts + " руб");
+        if (sumProducts == 0) {
+            System.out.println("Пуста");
+        } else {
+            System.out.println("Итого " + sumProducts + " руб");
+        }
     }
 
     public void saveJson(File jsonFile) throws IOException {
@@ -42,7 +46,7 @@ public class Basket {
         }
     }
 
-    static Basket loadFromJsonFile(File jsonFile) throws IOException {
+    public static Basket loadFromJsonFile(File jsonFile) throws IOException {
         if (jsonFile.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(jsonFile));) {
                 GsonBuilder builder = new GsonBuilder();
