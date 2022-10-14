@@ -46,11 +46,7 @@ public class Main {
             basket = new Basket(products, prices);
         }
 
-        ClientLog clientLog = null;
-
-        if (log.enabled == true) {
-            clientLog = new ClientLog();
-        }
+        ClientLog clientLog = new ClientLog();
 
         System.out.println("Список возможных товаров для покупки:");
         for (int i = 0; i < basket.getProdName().length; i++) {
@@ -85,10 +81,7 @@ public class Main {
                     int productCount = Integer.parseInt(inputArr[1]);
 
                     basket.addToCart(productNumber - 1, productCount);
-
-                    if (log.enabled == true) {
-                        clientLog.log(productNumber, productCount);
-                    }
+                    clientLog.log(productNumber, productCount);
 
                     if (save.enabled == true) {
                         if (save.format.equals("txt")) {
