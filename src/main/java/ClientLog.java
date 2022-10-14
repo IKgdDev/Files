@@ -17,8 +17,8 @@ public class ClientLog {
         entry.add(new String[]{Integer.toString(productNum), Integer.toString(amount)});
     }
 
-    public void exportAsCSV(File txtFile) throws IOException {
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(txtFile))) {
+    public void exportAsCSV(File file) throws IOException {
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
             csvWriter.writeAll(entry);
         }
     }

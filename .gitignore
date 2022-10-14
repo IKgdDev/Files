@@ -6,3 +6,4 @@ basket.bin
 target/
 *.csv
 *.json
+shop.xml

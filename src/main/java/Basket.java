@@ -53,11 +53,59 @@ public class Basket {
                 Gson gson = builder.create();
                 return gson.fromJson(br.readLine(), Basket.class);
             }
-        } else {
-            String[] products = {"Хлеб", "Сырок", "Шоколадка"};
-            int[] prices = {40, 60, 100};
-            return new Basket(products, prices);
         }
+        return null;
+    }
+
+    public void saveTxt(File textFile) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFile));) {
+            StringBuilder s = new StringBuilder();
+
+            for (int i = 0; i < prodName.length; i++) {
+                s.append(prodName[i] + " ");
+            }
+            bw.write(s.toString());
+            bw.newLine();
+            s.setLength(0);
+
+            for (int i = 0; i < prices.length; i++) {
+                s.append(prices[i] + " ");
+            }
+            bw.write(s.toString());
+            bw.newLine();
+            s.setLength(0);
+
+            for (int i = 0; i < prodAmount.length; i++) {
+                s.append(prodAmount[i] + " ");
+            }
+            bw.write(s.toString());
+        }
+    }
+
+    static Basket loadFromTxtFile(File textFile) throws IOException {
+        if (textFile.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(textFile));) {
+
+                String[] products = br.readLine().strip().split(" ");
+
+                String[] pricesStr = br.readLine().strip().split(" ");
+                int[] prices = new int[pricesStr.length];
+
+                for (int i = 0; i < prices.length; i++) {
+                    prices[i] = Integer.parseInt(pricesStr[i]);
+                }
+
+                Basket basket = new Basket(products, prices);
+
+                String[] amountsStr = br.readLine().strip().split(" ");
+
+                for (int i = 0; i < amountsStr.length; i++) {
+                    basket.prodAmount[i] = Integer.parseInt(amountsStr[i]);
+                }
+                return basket;
+            }
+        }
+        return null;
     }
 
     public String[] getProdName() {

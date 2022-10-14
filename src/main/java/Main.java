@@ -1,21 +1,55 @@
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
 
         Scanner scan = new Scanner(System.in);
-        File fileCsv = new File("log.csv");
-        File fileJson = new File("basket.json");
 
-        ClientLog clientLog = new ClientLog();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new File("shop.xml"));
+
+        ConfigBlock load = new ConfigBlock(doc.getElementsByTagName("load").item(0));
+        ConfigBlock save = new ConfigBlock(doc.getElementsByTagName("save").item(0));
+        ConfigBlock log = new ConfigBlock(doc.getElementsByTagName("log").item(0));
 
         Basket basket = null;
-        try {
-            basket = Basket.loadFromJsonFile(fileJson);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+
+        if (load.enabled == true) {
+            if (load.format.equals("txt")) {
+                try {
+                    basket = Basket.loadFromTxtFile(new File(load.fileName));
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if (load.format.equals("json")) {
+                try {
+                    basket = Basket.loadFromJsonFile(new File(load.fileName));
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        if (basket == null) {
+            String[] products = {"Хлеб", "Сырок", "Шоколадка"};
+            int[] prices = {40, 60, 100};
+            basket = new Basket(products, prices);
+        }
+
+        ClientLog clientLog = null;
+
+        if (log.enabled == true) {
+            clientLog = new ClientLog();
         }
 
         System.out.println("Список возможных товаров для покупки:");
@@ -31,10 +65,13 @@ public class Main {
             String input = scan.nextLine();
 
             if ("end".equals(input)) {
-                try {
-                    clientLog.exportAsCSV(fileCsv);
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
+
+                if (log.enabled == true) {
+                    try {
+                        clientLog.exportAsCSV(new File(log.fileName));
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
                 break;
             }
@@ -48,18 +85,57 @@ public class Main {
                     int productCount = Integer.parseInt(inputArr[1]);
 
                     basket.addToCart(productNumber - 1, productCount);
-                    clientLog.log(productNumber, productCount);
 
-                    try {
-                        basket.saveJson(fileJson);
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
+                    if (log.enabled == true) {
+                        clientLog.log(productNumber, productCount);
+                    }
+
+                    if (save.enabled == true) {
+                        if (save.format.equals("txt")) {
+                            try {
+                                basket.saveTxt(new File(save.fileName));
+                            } catch (IOException e) {
+                                System.out.println(e.getMessage());
+                            }
+                        }
+                        if (save.format.equals("json")) {
+                            try {
+                                basket.saveJson(new File(save.fileName));
+                            } catch (IOException e) {
+                                System.out.println(e.getMessage());
+                            }
+                        }
                     }
                     break;
 
                 case 2:
                     basket.printCart();
                     break;
+            }
+        }
+    }
+}
+
+class ConfigBlock {
+    boolean enabled;
+    String fileName;
+    String format;
+
+    public ConfigBlock(Node node) {
+        NodeList listNode = node.getChildNodes();
+
+        for (int i = 0; i < listNode.getLength(); i++) {
+            Node currentNode = listNode.item(i);
+            if (Node.ELEMENT_NODE == currentNode.getNodeType()) {
+                if (currentNode.getNodeName().equals("enabled")) {
+                    enabled = Boolean.parseBoolean(currentNode.getTextContent());
+                }
+                if (currentNode.getNodeName().equals("fileName")) {
+                    fileName = currentNode.getTextContent();
+                }
+                if (currentNode.getNodeName().equals("format")) {
+                    format = currentNode.getTextContent();
+                }
             }
         }
     }
