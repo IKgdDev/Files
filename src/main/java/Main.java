@@ -23,7 +23,7 @@ public class Main {
 
         Basket basket = null;
 
-        if (load.enabled == true) {
+        if (load.enabled) {
             if (load.format.equals("txt")) {
                 try {
                     basket = Basket.loadFromTxtFile(new File(load.fileName));
@@ -62,7 +62,7 @@ public class Main {
 
             if ("end".equals(input)) {
 
-                if (log.enabled == true) {
+                if (log.enabled) {
                     try {
                         clientLog.exportAsCSV(new File(log.fileName));
                     } catch (IOException e) {
@@ -83,7 +83,7 @@ public class Main {
                     basket.addToCart(productNumber - 1, productCount);
                     clientLog.log(productNumber, productCount);
 
-                    if (save.enabled == true) {
+                    if (save.enabled) {
                         if (save.format.equals("txt")) {
                             try {
                                 basket.saveTxt(new File(save.fileName));
